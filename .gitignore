@@ -1,2 +1,24 @@
+# Scala related
 *.class
 *.log
+project/project
+project/.bloop
+target/
+
+# Visual Studio Code
+.vscode
+
+# IDEA
+.idea
+
+# Metals
+.metals
+.bloop
+.bsp
+
+# Local files
+envs.sh
+src/main/resources/application.json
+
+# Docker compose
+dc/.env
