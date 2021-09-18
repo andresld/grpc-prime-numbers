@@ -4,11 +4,22 @@ import sbt._
 object dependencies {
 
   lazy val version = new {
+    val cats: String = "2.6.1"
+    val circe: String = "0.14.1"
     val http4s: String = "0.23.1"
     val logback: String = "1.2.5"
     val pureconfig: String = "0.16.0"
     val scalatest: String = "3.2.9"
     val slf4j: String = "2.1.1"
+  }
+
+  lazy val cats = new {
+    val core: ModuleID = "org.typelevel" %% "cats-core" % version.cats
+  }
+
+  lazy val circe = new {
+    val generic: ModuleID = "io.circe" %% "circe-generic-extras" % version.circe
+    val parser: ModuleID = "io.circe" %% "circe-parser" % version.circe
   }
 
   lazy val grpc = new {

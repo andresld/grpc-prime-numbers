@@ -48,9 +48,28 @@ def defineProject(projectName: String, projectDirectory: String): Project =
     .enablePlugins(DockerPlugin)
     .enablePlugins(Fs2Grpc)
 
+lazy val logging = (project in file("services/logging"))
+  .settings(
+    // Base definitions
+    organization         := "com.github.aldtid",
+    name                 := "grpc-prime-numbers-logging",
+    scalaVersion         := "2.13.6",
+    version              := "0.1.0-SNAPSHOT",
+    scalacOptions       ++= compilerOptions,
+    libraryDependencies ++= Seq(
+      dependencies.cats.core,
+      dependencies.circe.generic,
+      dependencies.circe.parser,
+      dependencies.pureconfig.config,
+      dependencies.test.core
+    )
+  )
+
 lazy val proxy = defineProject("grpc-prime-numbers-proxy", "services/proxy")
+  .aggregate(logging)
 
 lazy val generator = defineProject("grpc-prime-numbers-generator", "services/generator")
+  .aggregate(logging)
 
 lazy val root = (project in file("."))
   .aggregate(proxy, generator)
