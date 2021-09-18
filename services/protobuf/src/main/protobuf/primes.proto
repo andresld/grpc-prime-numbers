@@ -17,5 +17,5 @@ message PrimesRequest {
 
 // The response message containing the calculated prime.
 message PrimesResponse {
-  string prime = 1;
+  int64 prime = 1;
 }

@@ -9,7 +9,29 @@ val compilerOptions: Seq[String] =
     "-unchecked"
   )
 
-val libDependencies: Seq[ModuleID] =
+val loggingDependencies: Seq[ModuleID] =
+  Seq(
+    dependencies.cats.core,
+    dependencies.circe.generic,
+    dependencies.circe.parser,
+    dependencies.pureconfig.config,
+    dependencies.test.core
+  )
+
+val generatorDependencies: Seq[ModuleID] =
+  Seq(
+    dependencies.cats.core,
+    dependencies.cats.effect,
+    dependencies.circe.generic,
+    dependencies.circe.parser,
+    dependencies.grpc.client,
+    dependencies.log.binding,
+    dependencies.log.slf4j,
+    dependencies.pureconfig.config,
+    dependencies.test.core
+  )
+
+val proxyDependencies: Seq[ModuleID] =
   Seq(
     dependencies.grpc.client,
     dependencies.http4s.client,
@@ -21,7 +43,7 @@ val libDependencies: Seq[ModuleID] =
     dependencies.test.core
   )
 
-def defineProject(moduleName: String, projectName: String, projectDirectory: String): Project =
+def defineProject(moduleName: String, projectName: String, projectDirectory: String, dependencies: Seq[ModuleID]): Project =
   Project(moduleName, file(projectDirectory))
     .settings(
       // Base definitions
@@ -30,7 +52,7 @@ def defineProject(moduleName: String, projectName: String, projectDirectory: Str
       scalaVersion         := "2.13.6",
       version              := "0.1.0-SNAPSHOT",
       scalacOptions       ++= compilerOptions,
-      libraryDependencies ++= libDependencies,
+      libraryDependencies ++= dependencies,
       // Docker definitions
       Docker / packageName                 := projectName,
       Docker / defaultLinuxInstallLocation := s"/opt/$projectName",
@@ -55,13 +77,7 @@ lazy val logging = (project in file("services/logging"))
     scalaVersion         := "2.13.6",
     version              := "0.1.0-SNAPSHOT",
     scalacOptions       ++= compilerOptions,
-    libraryDependencies ++= Seq(
-      dependencies.cats.core,
-      dependencies.circe.generic,
-      dependencies.circe.parser,
-      dependencies.pureconfig.config,
-      dependencies.test.core
-    )
+    libraryDependencies ++= loggingDependencies
   )
 
 lazy val protobuf = (project in file("services/protobuf"))
@@ -75,11 +91,11 @@ lazy val protobuf = (project in file("services/protobuf"))
   )
   .enablePlugins(Fs2Grpc)
 
-lazy val proxy = defineProject("proxy", "grpc-prime-numbers-proxy", "services/proxy")
+lazy val proxy = defineProject("proxy", "grpc-prime-numbers-proxy", "services/proxy", proxyDependencies)
   .aggregate(logging)
   .dependsOn(logging, protobuf)
 
-lazy val generator = defineProject("generator", "grpc-prime-numbers-generator", "services/generator")
+lazy val generator = defineProject("generator", "grpc-prime-numbers-generator", "services/generator", generatorDependencies)
   .aggregate(logging)
   .dependsOn(logging, protobuf)
 
