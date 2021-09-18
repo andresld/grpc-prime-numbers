@@ -1,7 +1,7 @@
 package com.github.aldtid.grpc.prime.numbers.proxy
 
 import com.github.aldtid.grpc.prime.numbers.logging.implicits.all._
-import com.github.aldtid.grpc.prime.numbers.proxy.handler.PrimeHandler
+import com.github.aldtid.grpc.prime.numbers.proxy.handler.PrimesHandler
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.ProgramLog
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.messages._
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.tags.routerTag
@@ -27,7 +27,7 @@ object application {
    * @tparam L logging type to format
    * @return an application that handles every API route
    */
-  def app[F[_] : Sync : Logger : Http4sDsl, L](controller: PrimeHandler[F])
+  def app[F[_] : Sync : Logger : Http4sDsl, L](controller: PrimesHandler[F])
                                               (implicit pl: ProgramLog[L]): HttpApp[F] = {
 
     import pl._
@@ -66,7 +66,7 @@ object application {
    * @tparam L logging type to format
    * @return a partial function that handles each of 'developers' endpoints
    */
-  def developers[F[_] : Monad, L : ProgramLog](handler: PrimeHandler[F])
+  def developers[F[_] : Monad, L : ProgramLog](handler: PrimesHandler[F])
                                               (implicit dsl: Http4sDsl[F]): PartialFunction[Request[F], F[Response[F]]] = {
 
     import dsl._
