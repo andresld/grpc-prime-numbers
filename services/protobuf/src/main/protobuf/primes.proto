@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package com.github.aldtid.grpc.prime.numbers.protobuf;
+
+// The primes service definition.
+service Primes {
+
+  // Gets the request target primes number and calculates the respective amount of primes.
+  rpc CalculatePrimes (PrimesRequest) returns (stream PrimesResponse) {}
+
+}
+
+// The request message containing the target number to calculate primes.
+message PrimesRequest {
+  int64 number = 1;
+}
+
+// The response message containing the calculated prime.
+message PrimesResponse {
+  string prime = 1;
+}
