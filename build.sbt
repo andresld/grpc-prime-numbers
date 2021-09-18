@@ -21,8 +21,8 @@ val libDependencies: Seq[ModuleID] =
     dependencies.test.core
   )
 
-def defineProject(projectName: String, projectDirectory: String): Project =
-  Project(projectName, file(projectDirectory))
+def defineProject(moduleName: String, projectName: String, projectDirectory: String): Project =
+  Project(moduleName, file(projectDirectory))
     .settings(
       // Base definitions
       organization         := "com.github.aldtid",
@@ -65,11 +65,13 @@ lazy val logging = (project in file("services/logging"))
     )
   )
 
-lazy val proxy = defineProject("grpc-prime-numbers-proxy", "services/proxy")
+lazy val proxy = defineProject("proxy", "grpc-prime-numbers-proxy", "services/proxy")
   .aggregate(logging)
+  .dependsOn(logging)
 
-lazy val generator = defineProject("grpc-prime-numbers-generator", "services/generator")
+lazy val generator = defineProject("generator", "grpc-prime-numbers-generator", "services/generator")
   .aggregate(logging)
+  .dependsOn(logging)
 
 lazy val root = (project in file("."))
   .aggregate(proxy, generator)
