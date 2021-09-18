@@ -1,5 +1,6 @@
-package com.github.aldtid.grpc.prime.numbers.logging
+package com.github.aldtid.grpc.prime.numbers.logging.json
 
+import com.github.aldtid.grpc.prime.numbers.logging.{BaseProgramLog, Log, Loggable}
 import com.github.aldtid.grpc.prime.numbers.logging.Log.createLog
 import com.github.aldtid.grpc.prime.numbers.logging.model._
 
@@ -9,7 +10,24 @@ import io.circe.syntax._
 import pureconfig.error.ConfigReaderFailures
 
 
-object json {
+trait JsonBaseProgramLog extends BaseProgramLog[Json] {
+
+  import com.github.aldtid.grpc.prime.numbers.logging.json.JsonBaseProgramLog._
+
+  implicit val log: Log[Json] = jsonLog
+
+  implicit val configReaderFailuresLoggable: Loggable[ConfigReaderFailures, Json] = jsonConfigReaderFailuresLoggable
+
+  implicit val messageLoggable: Loggable[Message, Json] = jsonMessageLoggable
+  implicit val tagLoggable: Loggable[Tag, Json] = jsonTagLoggable
+  implicit val usernameLoggable: Loggable[Username, Json] = jsonUsernameLoggable
+  implicit val identifierLoggable: Loggable[Identifier, Json] = jsonIdentifierLoggable
+  implicit val latencyLoggable: Loggable[Latency, Json] = jsonLatencyLoggable
+  implicit val threadPoolLoggable: Loggable[ThreadPool, Json] = jsonThreadPoolLoggable
+
+}
+
+object JsonBaseProgramLog {
 
   // ----- BASE LOG INSTANCE -----
   val jsonLog: Log[Json] = createLog[Json](Json.obj(), _.printWith(Printer.noSpaces))((x, y) => y deepMerge x)
@@ -26,20 +44,5 @@ object json {
   val jsonLatencyLoggable: Loggable[Latency, Json] = _.asJson
   val jsonThreadPoolLoggable: Loggable[ThreadPool, Json] = _.asJson
   // ----------
-
-  implicit val jsonBaseProgramLog: BaseProgramLog[Json] = new BaseProgramLog[Json] {
-
-    implicit val log: Log[Json] = jsonLog
-
-    implicit val configReaderFailuresLoggable: Loggable[ConfigReaderFailures, Json] = jsonConfigReaderFailuresLoggable
-
-    implicit val messageLoggable: Loggable[Message, Json] = jsonMessageLoggable
-    implicit val tagLoggable: Loggable[Tag, Json] = jsonTagLoggable
-    implicit val usernameLoggable: Loggable[Username, Json] = jsonUsernameLoggable
-    implicit val identifierLoggable: Loggable[Identifier, Json] = jsonIdentifierLoggable
-    implicit val latencyLoggable: Loggable[Latency, Json] = jsonLatencyLoggable
-    implicit val threadPoolLoggable: Loggable[ThreadPool, Json] = jsonThreadPoolLoggable
-
-  }
 
 }

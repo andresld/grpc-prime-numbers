@@ -1,11 +1,26 @@
 package com.github.aldtid.grpc.prime.numbers.proxy
 
+import com.github.aldtid.grpc.prime.numbers.proxy.launcher.start
+import com.github.aldtid.grpc.prime.numbers.proxy.logging.json.jsonProgramLog
+
 import cats.effect.{ExitCode, IO, IOApp}
+import io.circe.Json
+import org.http4s.dsl.{Http4sDsl, io}
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
+
+import scala.concurrent.ExecutionContext.global
 
 
 object Main extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] =
-    IO.println("Hello proxy!").as(ExitCode.Success)
+    for {
+      logger <- Slf4jLogger.create[IO]
+      code   <- run(io, logger)
+    } yield code
+
+  def run(implicit dsl: Http4sDsl[IO], logger: Logger[IO]): IO[ExitCode] =
+    start[IO, Json](global)
 
 }
