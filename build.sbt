@@ -46,7 +46,6 @@ def defineProject(moduleName: String, projectName: String, projectDirectory: Str
     )
     .enablePlugins(JavaAppPackaging)
     .enablePlugins(DockerPlugin)
-    .enablePlugins(Fs2Grpc)
 
 lazy val logging = (project in file("services/logging"))
   .settings(
@@ -65,13 +64,24 @@ lazy val logging = (project in file("services/logging"))
     )
   )
 
+lazy val protobuf = (project in file("services/protobuf"))
+  .settings(
+    // Base definitions
+    organization   := "com.github.aldtid",
+    name           := "grpc-prime-numbers-protobuf",
+    scalaVersion   := "2.13.6",
+    version        := "0.1.0-SNAPSHOT",
+    scalacOptions ++= compilerOptions
+  )
+  .enablePlugins(Fs2Grpc)
+
 lazy val proxy = defineProject("proxy", "grpc-prime-numbers-proxy", "services/proxy")
   .aggregate(logging)
-  .dependsOn(logging)
+  .dependsOn(logging, protobuf)
 
 lazy val generator = defineProject("generator", "grpc-prime-numbers-generator", "services/generator")
   .aggregate(logging)
-  .dependsOn(logging)
+  .dependsOn(logging, protobuf)
 
 lazy val root = (project in file("."))
   .aggregate(proxy, generator)
