@@ -11,6 +11,7 @@ object messages {
   val configurationLoaded: Message = "configuration loaded".asMessage
   val configurationErrors: Message = "configuration had errors".asMessage
   val creatingPrimesClient: Message = "creating primes gRPC client".asMessage
+  val clientThreadPool: Message = "creating gRPC client thread pool".asMessage
   val serverThreadPool: Message = "creating HTTP server thread pool".asMessage
   val startingServer: Message = "starting the server".asMessage
 

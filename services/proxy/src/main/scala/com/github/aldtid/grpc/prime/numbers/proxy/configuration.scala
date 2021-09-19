@@ -14,7 +14,7 @@ object configuration {
 
   final case class Client(host: String, port: Int)
 
-  final case class ThreadPools(server: Int)
+  final case class ThreadPools(client: Int, server: Int)
 
   /**
    * Reads a configuration file from the file system and tries to parse it.
