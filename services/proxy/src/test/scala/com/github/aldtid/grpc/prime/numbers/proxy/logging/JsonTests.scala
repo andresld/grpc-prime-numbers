@@ -1,6 +1,7 @@
 package com.github.aldtid.grpc.prime.numbers.proxy.logging
 
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.json.jsonProgramLog
+import com.github.aldtid.grpc.prime.numbers.protobuf.primes.PrimesRequest
 
 import cats.Id
 import io.circe.Json
@@ -40,6 +41,9 @@ class JsonTests extends AnyFlatSpec with Matchers {
           )
         )
       )
+
+    jsonProgramLog.primesRequestLoggable.format(PrimesRequest(1)) shouldBe
+      Json.obj("prime" -> Json.fromInt(1))
 
   }
 

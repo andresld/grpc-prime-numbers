@@ -23,15 +23,19 @@ trait JsonProgramLog extends ProgramLog[Json] with JsonBaseProgramLog {
 
 object JsonProgramLog {
 
+  // ----- LOGGABLE INSTANCES -----
   val jsonPrimesRequestLoggable: Loggable[PrimesRequest, Json] = request =>
     Json.obj("prime" -> request.number.asJson)
 
   val jsonMetadataLoggable: Loggable[Metadata, Json] = metadata =>
     Json.obj("metadata" -> toJson(metadata))
+  // ----------
 
+  // ----- UTILITY FUNCTIONS -----
   def toJson(metadata: Metadata): Json =
     metadata.keys().asScala.foldLeft(Json.obj())((json, key) =>
       json.deepMerge(Json.obj(key -> metadata.get(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER)).asJson))
     )
+  // ----------
 
 }
