@@ -19,4 +19,8 @@ object messages {
   val incomingRequest: Message = "incoming request".asMessage
   val outgoingResponse: Message = "outgoing response".asMessage
 
+  // ----- PRIMES -----
+  val primesRequest: Message = "requesting for primes".asMessage
+  val primesResponse: Message = "received primes response".asMessage
+
 }

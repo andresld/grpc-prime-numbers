@@ -8,5 +8,6 @@ object tags {
 
   val launcherTag: Tag = "LAUNCHER".asTag
   val routerTag: Tag = "ROUTER".asTag
+  val primesTag: Tag = "PRIMES".asTag
 
 }
