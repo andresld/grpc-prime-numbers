@@ -1,6 +1,6 @@
 package com.github.aldtid.grpc.prime.numbers.proxy
 
-import com.github.aldtid.grpc.prime.numbers.proxy.launcher.start
+import com.github.aldtid.grpc.prime.numbers.proxy.launcher.prepareAndStart
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.json.jsonProgramLog
 
 import cats.effect.{ExitCode, IO, IOApp}
@@ -21,6 +21,6 @@ object Main extends IOApp {
     } yield code
 
   def run(implicit dsl: Http4sDsl[IO], logger: Logger[IO]): IO[ExitCode] =
-    start[IO, Json](global)
+    prepareAndStart[IO, Json](global)
 
 }

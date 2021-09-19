@@ -1,7 +1,7 @@
 package com.github.aldtid.grpc.prime.numbers.proxy
 
 import com.github.aldtid.grpc.prime.numbers.proxy.application._
-import com.github.aldtid.grpc.prime.numbers.proxy.handler.PrimeHandler
+import com.github.aldtid.grpc.prime.numbers.proxy.handler.PrimesHandler
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.json.jsonProgramLog
 
 import cats.Id
@@ -21,9 +21,9 @@ class ApplicationTests extends AnyFlatSpec with Matchers {
 
     implicit val dsl: Http4sDsl[Id] = new Http4sDsl[Id] {}
 
-    val handler: PrimeHandler[Id] = number =>
+    val handler: PrimesHandler[Id] = number =>
       if (number == 10) EitherT.rightT[Id, String](NonEmptyList.of(2, 3, 5, 7))
-      else EitherT.leftT[Id, NonEmptyList[Int]]("error!")
+      else EitherT.leftT[Id, NonEmptyList[Long]]("error!")
 
     val body: String = "2,3,5,7"
     val headers: Headers = Headers(`Content-Type`(MediaType.text.plain, Charset.`UTF-8`), `Content-Length`(body.length))
@@ -39,7 +39,7 @@ class ApplicationTests extends AnyFlatSpec with Matchers {
 
     implicit val dsl: Http4sDsl[Id] = new Http4sDsl[Id] {}
 
-    val handler: PrimeHandler[Id] = _ => EitherT.leftT[Id, NonEmptyList[Int]]("error!")
+    val handler: PrimesHandler[Id] = _ => EitherT.leftT[Id, NonEmptyList[Long]]("error!")
 
     val body: String = "error!"
     val headers: Headers = Headers(`Content-Type`(MediaType.text.plain, Charset.`UTF-8`), `Content-Length`(body.length))

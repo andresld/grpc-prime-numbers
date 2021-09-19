@@ -6,7 +6,11 @@ import com.github.aldtid.grpc.prime.numbers.logging.model.Message
 
 object messages {
 
-  // ---- GENERAL ROUTES -----
+  // ----- LAUNCHER -----
+  val creatingPrimesClient: Message = "creating primes gRPC client".asMessage
+  val startingServer: Message = "starting the server".asMessage
+
+  // ----- GENERAL ROUTES -----
   val incomingRequest: Message = "incoming request".asMessage
   val outgoingResponse: Message = "outgoing response".asMessage
 
