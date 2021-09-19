@@ -1,6 +1,7 @@
 package com.github.aldtid.grpc.prime.numbers.generator
 
 import com.github.aldtid.grpc.prime.numbers.generator.configuration._
+import com.github.aldtid.grpc.prime.numbers.generator.handler.PrimesHandler
 import com.github.aldtid.grpc.prime.numbers.generator.logging.ProgramLog
 import com.github.aldtid.grpc.prime.numbers.generator.logging.messages._
 import com.github.aldtid.grpc.prime.numbers.generator.logging.tags.launcherTag
@@ -71,7 +72,7 @@ object launcher {
    * @tparam L logging type to format
    * @return a resource to use the prime service definition
    */
-  def primesService[F[_] : Async, L: ProgramLog]: Resource[F, ServerServiceDefinition] =
+  def primesService[F[_] : Async : Logger, L: ProgramLog]: Resource[F, ServerServiceDefinition] =
     PrimesFs2Grpc.bindServiceResource[F](PrimesHandler.default)
 
   /**
