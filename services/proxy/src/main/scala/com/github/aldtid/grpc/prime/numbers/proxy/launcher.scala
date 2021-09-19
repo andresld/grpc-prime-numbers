@@ -74,7 +74,7 @@ object launcher {
    * @tparam F context type
    * @return a resource to use the created managed channel
    */
-  def managedChannelResource[F[_] : Async](grpc: GRPC): Resource[F, ManagedChannel] =
+  def managedChannelResource[F[_] : Async](grpc: Client): Resource[F, ManagedChannel] =
     NettyChannelBuilder
       .forAddress(grpc.host, grpc.port)
       .usePlaintext()
@@ -109,9 +109,9 @@ object launcher {
       } yield code
 
     def run(configuration: Configuration, ec: ExecutionContext): F[ExitCode] =
-      handlerAndStart(configuration.grpc, startServer(ec, configuration.server))
+      handlerAndStart(configuration.client, startServer(ec, configuration.server))
 
-    def handlerAndStart(grpc: GRPC, f: PrimesHandler[F] => F[ExitCode]): F[ExitCode] =
+    def handlerAndStart(grpc: Client, f: PrimesHandler[F] => F[ExitCode]): F[ExitCode] =
       Logger[F].info(creatingPrimesClient |+| launcherTag) *>
         managedChannelResource(grpc)
           .flatMap(PrimesFs2Grpc.stubResource[F])

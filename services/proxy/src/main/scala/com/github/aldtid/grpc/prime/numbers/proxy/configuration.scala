@@ -8,11 +8,11 @@ import pureconfig.generic.auto._
 
 object configuration {
 
-  final case class Configuration(server: Server, grpc: GRPC, threadPools: ThreadPools)
+  final case class Configuration(server: Server, client: Client, threadPools: ThreadPools)
 
   final case class Server(host: String, port: Int, basePath: String)
 
-  final case class GRPC(host: String, port: Int)
+  final case class Client(host: String, port: Int)
 
   final case class ThreadPools(server: Int)
 

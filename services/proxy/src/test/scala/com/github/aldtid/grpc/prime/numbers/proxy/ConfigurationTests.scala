@@ -16,7 +16,7 @@ class ConfigurationTests extends AnyFlatSpec with Matchers {
       Right(
         Configuration(
           Server("localhost", 8080, "/"),
-          GRPC("localhost", 9999),
+          Client("localhost", 9999),
           ThreadPools(10)
         )
       )
