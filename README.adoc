@@ -1,0 +1,56 @@
+= gRPC Primes Generator
+:toc:
+:toclevels: 5
+
+== Interacting with the code
+
+NOTE: Base location is assumed to be the project directory.
+
+=== Running the tests
+
+To run all tests it is only required to execute the next command:
+
+[source,bash]
+sbt test
+
+=== Running the services
+
+To run both services it is required to follow next steps:
+
+. Package the services in a Docker container running:
++
+[source,bash]
+sbt docker:publishLocal
+
+. Move to `dc` directory:
++
+[source,bash]
+cd dc
+
+. Get the environment up with:
++
+[source,bash]
+docker-compose up -d
++
+NOTE: In case Elasticsearch gives an error related to the value of `vm.map_max_count` being to low, you can increase it via: `sysctl -w vm.max_map_count=262144`.
+
+That's it! Your API should be running, and the logs should be getting injected into the Elasticsearch via Logstash to be searched via Kibana.
+
+NOTE: Kibana can be accessed at http://localhost:5601
+
+=== Requesting the proxy
+
+It is possible to perform requests to the proxy using the `Postman` collection and environment present at `postman/` directory, it is only required to import them both.
+
+Requests can also be performed via `curl`:
+
+[source,bash]
+curl http://localhost:8080/prime/9
+
+== Examples
+
+An example of primes request and response is the next one:
+
+[source,bash]
+$ curl http://localhost:8080/prime/9
+2,3,5,7

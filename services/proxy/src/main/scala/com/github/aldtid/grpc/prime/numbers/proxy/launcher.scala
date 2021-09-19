@@ -20,7 +20,7 @@ import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
 import pureconfig.error.ConfigReaderFailures
 
-import java.util.concurrent.Executors
+import java.util.concurrent.{ExecutorService, Executors}
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService}
 
@@ -68,15 +68,17 @@ object launcher {
     Sync[F].delay(ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(size)))
 
   /**
-   * Creates a ManagedChannel instance to tardet gRPC server.
+   * Creates a ManagedChannel instance to target gRPC server.
    *
+   * @param es executor service to run the requests
    * @param grpc gRPC configuration
    * @tparam F context type
    * @return a resource to use the created managed channel
    */
-  def managedChannelResource[F[_] : Async](grpc: Client): Resource[F, ManagedChannel] =
+  def managedChannelResource[F[_] : Async](es: ExecutorService, grpc: Client): Resource[F, ManagedChannel] =
     NettyChannelBuilder
       .forAddress(grpc.host, grpc.port)
+      .executor(es)
       .usePlaintext()
       .resource[F]
 
@@ -102,18 +104,20 @@ object launcher {
     def threadPoolsAndRun(configuration: Configuration): F[ExitCode] =
       for {
 
-        _    <- Logger[F].info(serverThreadPool |+| configuration.threadPools.server.asThreadPool |+| launcherTag)
-        ec   <- threadPool(configuration.threadPools.server)
-        code <- run(configuration, ec)
+        _        <- Logger[F].info(clientThreadPool |+| configuration.threadPools.server.asThreadPool |+| launcherTag)
+        clientES <- threadPool(configuration.threadPools.client)
+        _        <- Logger[F].info(serverThreadPool |+| configuration.threadPools.server.asThreadPool |+| launcherTag)
+        serverEC <- threadPool(configuration.threadPools.server)
+        code     <- run(configuration, clientES, serverEC)
 
       } yield code
 
-    def run(configuration: Configuration, ec: ExecutionContext): F[ExitCode] =
-      handlerAndStart(configuration.client, startServer(ec, configuration.server))
+    def run(configuration: Configuration, clientES: ExecutorService, serverEC: ExecutionContext): F[ExitCode] =
+      handlerAndStart(configuration.client, clientES, startServer(serverEC, configuration.server))
 
-    def handlerAndStart(grpc: Client, f: PrimesHandler[F] => F[ExitCode]): F[ExitCode] =
+    def handlerAndStart(grpc: Client, es: ExecutorService, f: PrimesHandler[F] => F[ExitCode]): F[ExitCode] =
       Logger[F].info(creatingPrimesClient |+| launcherTag) *>
-        managedChannelResource(grpc)
+        managedChannelResource(es, grpc)
           .flatMap(PrimesFs2Grpc.stubResource[F])
           .use(primes => f(PrimesHandler.default[F, L](primes)))
 
