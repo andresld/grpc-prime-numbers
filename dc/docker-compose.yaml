@@ -1,0 +1,65 @@
+version: '2.3'
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=elasticsearch
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.14.1
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.14.1
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - KIBANA_HOST=kibana
+    volumes:
+      - ./files/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - type: volume
+        source: api_logs
+        target: /var/log/grpc-prime-numbers/
+    depends_on:
+      - elasticsearch
+      - kibana
+
+  proxy:
+    image: grpc-prime-numbers-proxy:${VERSION:-0.1.0-SNAPSHOT}
+    environment:
+      JAVA_OPTS: "-Dconfig.file=/opt/grpc-prime-numbers-proxy/config/application.conf -Dlogback.configurationFile=file:/opt/grpc-prime-numbers-proxy/config/logback.xml"
+    volumes:
+      - ./files/proxy:/opt/grpc-prime-numbers-proxy/config
+      - type: volume
+        source: api_logs
+        target: /opt/grpc-prime-numbers-proxy/log
+    ports:
+      - 8080:8080
+
+  generator:
+    image: grpc-prime-numbers-generator:${VERSION:-0.1.0-SNAPSHOT}
+    environment:
+      JAVA_OPTS: "-Dconfig.file=/opt/grpc-prime-numbers-generator/config/application.conf -Dlogback.configurationFile=file:/opt/grpc-prime-numbers-generator/config/logback.xml"
+    volumes:
+      - ./files/generator:/opt/grpc-prime-numbers-generator/config
+      - type: volume
+        source: api_logs
+        target: /opt/grpc-prime-numbers-generator/log
+    ports:
+      - 9999:9999
+
+volumes:
+  api_logs:

@@ -58,7 +58,6 @@ def defineProject(moduleName: String, projectName: String, projectDirectory: Str
       Docker / defaultLinuxInstallLocation := s"/opt/$projectName",
       dockerBaseImage                      := "openjdk:11-jdk-slim",
       dockerLabels                         := Map("version" -> version.value),
-      dockerExposedPorts                   += 8080,
       dockerExposedVolumes                 := Seq(
         s"/opt/$projectName/config",
         s"/opt/$projectName/log"
