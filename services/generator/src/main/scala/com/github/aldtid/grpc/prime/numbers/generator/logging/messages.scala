@@ -6,11 +6,14 @@ import com.github.aldtid.grpc.prime.numbers.logging.model.Message
 
 object messages {
 
-  // ---- LAUNCHER -----
+  // ----- LAUNCHER -----
   val loadingConfiguration: Message = "loading configuration".asMessage
   val configurationLoaded: Message = "configuration loaded".asMessage
   val configurationErrors: Message = "configuration had errors".asMessage
   val serverThreadPool: Message = "creating gRPC server thread pool".asMessage
   val startingServer: Message = "starting the server".asMessage
+
+  // ----- PRIMES -----
+  val primeGeneration: Message = "calculating primes for received request".asMessage
 
 }

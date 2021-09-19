@@ -13,7 +13,7 @@ import org.typelevel.ci.CIString
 
 class JsonTests extends AnyFlatSpec with Matchers {
 
-  it should "define Loggable instances with the expected formats" in {
+  "jsonProgramLog" should "define Loggable instances with the expected formats" in {
 
     val request: Request[Id] = Request(headers = Headers(Raw(CIString("header"), "value")))
     val response: Response[Id] = Response(headers = Headers(Raw(CIString("header"), "value")))
