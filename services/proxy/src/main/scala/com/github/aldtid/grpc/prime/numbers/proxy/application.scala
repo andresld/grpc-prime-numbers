@@ -5,12 +5,12 @@ import com.github.aldtid.grpc.prime.numbers.proxy.handler.PrimesHandler
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.ProgramLog
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.messages._
 import com.github.aldtid.grpc.prime.numbers.proxy.logging.tags.routerTag
-
 import cats.Monad
-import cats.effect.Sync
+import cats.effect.{Clock, Sync}
 import cats.implicits._
-import org.http4s.{HttpApp, Request, Response}
+import org.http4s.{HttpApp, HttpRoutes, Request, Response}
 import org.http4s.dsl.Http4sDsl
+import org.http4s.server.Router
 import org.typelevel.log4cats.Logger
 
 
@@ -21,30 +21,34 @@ object application {
    *
    * Composes all the application routes, logs the requests and responses and processes the incoming requests.
    *
-   * @param controller 'developers' endpoints controller
+   * @param basePath API base path
+   * @param handler 'primes' endpoints controller
    * @param pl logging instances
    * @tparam F context
    * @tparam L logging type to format
    * @return an application that handles every API route
    */
-  def app[F[_] : Sync : Logger : Http4sDsl, L](controller: PrimesHandler[F])
-                                              (implicit pl: ProgramLog[L]): HttpApp[F] = {
+  def app[F[_] : Sync : Clock : Logger : Http4sDsl, L](basePath: String,
+                                                       handler: PrimesHandler[F])
+                                                      (implicit pl: ProgramLog[L]): HttpApp[F] = {
 
     import pl._
 
-    // Routes composition
-    val process: Function[Request[F], F[Response[F]]] = developers(controller) applyOrElse (_, notFound)
+    val routes: HttpRoutes[F] = Router(basePath -> HttpRoutes.of(developers(handler)))
+
+    val process: Function[Request[F], F[Response[F]]] =
+      request => routes.apply(request).getOrElseF(notFound[F].apply(request))
 
     HttpApp[F](request =>
 
       for {
 
-        start    <- Sync[F].realTime
+        start    <- Clock[F].realTime
         _        <- Logger[F].info(incomingRequest |+| request |+| routerTag)
 
         response <- process(request)
 
-        end      <- Sync[F].realTime
+        end      <- Clock[F].realTime
         latency   = (end - start).toMillis.asLatency
         _        <- Logger[F].info(outgoingResponse |+| response |+| latency |+| routerTag)
 

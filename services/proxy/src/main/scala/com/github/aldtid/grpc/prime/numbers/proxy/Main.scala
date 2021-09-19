@@ -9,8 +9,6 @@ import org.http4s.dsl.{Http4sDsl, io}
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
-import scala.concurrent.ExecutionContext.global
-
 
 object Main extends IOApp {
 
@@ -21,6 +19,6 @@ object Main extends IOApp {
     } yield code
 
   def run(implicit dsl: Http4sDsl[IO], logger: Logger[IO]): IO[ExitCode] =
-    prepareAndStart[IO, Json](global)
+    prepareAndStart[IO, Json]
 
 }
