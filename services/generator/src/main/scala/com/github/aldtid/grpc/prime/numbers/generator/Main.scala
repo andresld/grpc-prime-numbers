@@ -1,6 +1,6 @@
 package com.github.aldtid.grpc.prime.numbers.generator
 
-import com.github.aldtid.grpc.prime.numbers.generator.launcher.start
+import com.github.aldtid.grpc.prime.numbers.generator.launcher.prepareAndStart
 import com.github.aldtid.grpc.prime.numbers.generator.logging.json.jsonProgramLog
 
 import cats.effect.{ExitCode, IO, IOApp}
@@ -18,6 +18,6 @@ object Main extends IOApp {
     } yield code
 
   def run(implicit logger: Logger[IO]): IO[ExitCode] =
-    start[IO, Json]
+    prepareAndStart[IO, Json]
 
 }

@@ -1,0 +1,14 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 8080,
+    "base-path": "/"
+  },
+  "client": {
+    "host": "localhost",
+    "port": 9999
+  },
+  "thread-pools": {
+    "server": 10
+  }
+}
